@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace App\Client;
 
-
-use Exception;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use JsonException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class GhArchiveClient
@@ -22,21 +18,25 @@ class GhArchiveClient
     }
 
     /**
-     * @throws TransportExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ClientExceptionInterface
+     * @throws HttpExceptionInterface
      */
-    public function getEventsForDateAndHour(string $date, int $hour): ?string
+    public function getEventsForDateAndHour(string $date, int $hour): array
     {
-        //TODO: return array + exceptions?
         $url = sprintf('https://data.gharchive.org/%s-%s.json.gz', $date, $hour);
         $response = $this->httpClient->request('GET', $url);
 
         try {
-            return $response->getContent();
-        } catch (Exception $e) {
-            return null;
+            $responseBody = $response->getContent();
+        } catch (HttpExceptionInterface $e) {
+            // TODO: Log error to have more details about what went wrong.
+            throw $e;
+        }
+
+        try {
+            return json_decode($responseBody, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            // TODO: Log error to have more details about what went wrong.
+            throw $e;
         }
     }
 }

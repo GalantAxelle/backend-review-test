@@ -8,7 +8,6 @@ use App\Entity\Event;
 use App\Repository\ActorRepository;
 use App\Repository\RepoRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 
 class GhEventSerializer
 {
@@ -23,8 +22,7 @@ class GhEventSerializer
         ActorRepository $actorRepository,
         RepoRepository $repoRepository,
         EntityManagerInterface $entityManager
-    )
-    {
+    ) {
         $this->actorRepository = $actorRepository;
         $this->repoRepository = $repoRepository;
         $this->entityManager = $entityManager;
@@ -33,14 +31,13 @@ class GhEventSerializer
         $this->eventsToFlush = [];
     }
 
-    public function deserializeEventsIntoEntities(string $content): array
+    /**
+     * @param array $events Serialized events fetched from GH archive
+     *
+     * @return Event[]
+     */
+    public function deserializeEventsIntoEntities(array $events): array
     {
-        $events = json_decode($content, true);
-
-        if (!is_array($events)) {
-            throw new UnexpectedValueException('Invalid JSON response received from GHArchive');
-        }
-
         foreach ($events as $event) {
             $this->processEvent($event);
         }
