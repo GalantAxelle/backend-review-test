@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace App\Client;
 
+use App\Decoder\JsonLinesDecoder;
 use JsonException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class GhArchiveClient
 {
-    public function __construct(private HttpClientInterface $httpClient)
+    public function __construct(
+        private HttpClientInterface $httpClient,
+        private JsonLinesDecoder $decoder,
+    )
     {
     }
 
@@ -30,7 +34,8 @@ class GhArchiveClient
         }
 
         try {
-            return json_decode($responseBody, true, 512, JSON_THROW_ON_ERROR);
+            $unzippedContent = gzdecode($responseBody);
+            return $this->decoder->decodeJsonLinesToArray($unzippedContent);
         } catch (JsonException $e) {
             // TODO: Log error to have more details about what went wrong.
             throw $e;
