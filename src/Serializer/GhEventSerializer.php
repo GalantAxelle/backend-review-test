@@ -61,7 +61,7 @@ class GhEventSerializer
         }
 
         $eventEntity = new Event(
-            $event['id'],
+            (int) $event['id'],
             $event['type'],
             $actor ?? $this->localActors[$event['actor']['login']],
             $repo ?? $this->localRepos[$event['repo']['name']],
