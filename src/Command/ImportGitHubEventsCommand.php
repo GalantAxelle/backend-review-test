@@ -24,7 +24,6 @@ class ImportGitHubEventsCommand extends Command
         string $name = null
     ) {
         parent::__construct($name);
-        $this->ghArchiveClient = $ghArchiveClient;
     }
 
     protected function configure(): void
@@ -38,6 +37,8 @@ class ImportGitHubEventsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        ini_set('memory_limit', '4G');
+
         $io = new SymfonyStyle($input, $output);
         $date = $input->getOption('date');
         $hour = $input->getOption('hour');
@@ -49,10 +50,11 @@ class ImportGitHubEventsCommand extends Command
 
         $io->info("Fetching events for date $date and hour $hour");
         try {
-            //TODO: Call the GhArchiveEventRepository
+            $events = $this->eventRepository->findAllWithDateAndHour($date, (int) $hour);
             $io->success('Successfully fetched events from GHArchive');
         } catch (\Exception $e) {
             $io->error('Could not retrieve events from GHArchive.');
+            $io->error($e->getMessage());
         }
 
 
