@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Serializer;
 
 use App\Entity\Event;
+use App\Entity\EventType;
 use App\Repository\ActorRepository;
 use App\Repository\RepoRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -44,6 +45,10 @@ class GhEventSerializer
     {
         $actor = null;
         $repo = null;
+
+        if (false === in_array($event['type'], EventType::getValues(), true)) {
+            return;
+        }
 
         if (!isset($this->localActors[$event['actor']['login']])) {
             $actor = $this->actorRepository->findOrCreate($event['actor']);
