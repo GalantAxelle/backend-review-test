@@ -10,11 +10,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class GhArchiveClient
 {
-    private $httpClient;
-
-    public function __construct(HttpClientInterface $httpClient)
+    public function __construct(private HttpClientInterface $httpClient)
     {
-        $this->httpClient = $httpClient;
     }
 
     /**

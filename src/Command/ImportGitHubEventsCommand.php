@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Client\GhArchiveClient;
-use phpDocumentor\Reflection\Types\False_;
-use SebastianBergmann\Environment\Console;
+use App\Repository\GhArchiveEventRepository;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Command\DumpCompletionCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,10 +19,10 @@ class ImportGitHubEventsCommand extends Command
 {
     protected static $defaultName = 'app:import-github-events';
 
-    private $ghArchiveClient;
-
-    public function __construct(GhArchiveClient $ghArchiveClient, string $name = null)
-    {
+    public function __construct(
+        private GhArchiveEventRepository $eventRepository,
+        string $name = null
+    ) {
         parent::__construct($name);
         $this->ghArchiveClient = $ghArchiveClient;
     }
@@ -59,8 +56,6 @@ class ImportGitHubEventsCommand extends Command
         }
 
 
-
-
         return Command::SUCCESS;
     }
 
@@ -89,7 +84,7 @@ class ImportGitHubEventsCommand extends Command
 
     private function isHourFormatCorrect(string $hour): bool
     {
-        $hour = (int)$hour;
+        $hour = (int) $hour;
 
         if ($hour >= 0 && $hour <= 23) {
             return true;

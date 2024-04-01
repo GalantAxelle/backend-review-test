@@ -11,21 +11,15 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class GhEventSerializer
 {
-    private ActorRepository $actorRepository;
-    private RepoRepository $repoRepository;
-    private EntityManagerInterface $entityManager;
     private array $localActors;
     private array $localRepos;
     private array $eventsToFlush;
 
     public function __construct(
-        ActorRepository $actorRepository,
-        RepoRepository $repoRepository,
-        EntityManagerInterface $entityManager
+        private ActorRepository $actorRepository,
+        private RepoRepository $repoRepository,
+        private EntityManagerInterface $entityManager
     ) {
-        $this->actorRepository = $actorRepository;
-        $this->repoRepository = $repoRepository;
-        $this->entityManager = $entityManager;
         $this->localActors = [];
         $this->localRepos = [];
         $this->eventsToFlush = [];

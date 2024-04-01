@@ -9,13 +9,10 @@ use App\Serializer\GhEventSerializer;
 
 class GhArchiveEventRepository
 {
-    private GhArchiveClient $client;
-    private GhEventSerializer $serializer;
-
-    public function __construct(GhArchiveClient $client, GhEventSerializer $serializer)
-    {
-        $this->client = $client;
-        $this->serializer = $serializer;
+    public function __construct(
+        private GhArchiveClient $client,
+        private GhEventSerializer $serializer
+    ) {
     }
 
     public function findAllWithDateAndHour(string $date, int $hour)
@@ -23,5 +20,6 @@ class GhArchiveEventRepository
         $responseContent = $this->client->getEventsForDateAndHour($date, $hour);
         //TODO: Manage the entities -> flush
         $events = $this->serializer->deserializeEventsIntoEntities($responseContent);
+        dd($events[0]);
     }
 }
